@@ -1,0 +1,94 @@
+services:
+  freqtrade:
+    image: freqtradeorg/freqtrade:stable
+    restart: "no"
+    volumes:
+      - ./user_data:/freqtrade/user_data
+      - ./tools:/freqtrade/tools:ro
+    env_file:
+      - ./.env
+    working_dir: /freqtrade
+    ports:
+      - "127.0.0.1:8080:8080"
+    command: >
+      --help
+
+  dryrun-binance:
+    image: freqtradeorg/freqtrade:stable
+    profiles: ["binance"]
+    restart: unless-stopped
+    container_name: freqtrade-agent-binance-dryrun
+    volumes:
+      - ./user_data:/freqtrade/user_data
+      - ./tools:/freqtrade/tools:ro
+    env_file:
+      - ./.env
+    working_dir: /freqtrade
+    ports:
+      - "127.0.0.1:8080:18080"
+    entrypoint: /bin/sh
+    command: >
+      -lc "python /freqtrade/tools/local_api_proxy.py 18080 127.0.0.1 8080 &
+      exec freqtrade trade
+      --config user_data/config_spot_dryrun_binance.json
+      --strategy HybridSafeStrategy"
+
+  dryrun-okx:
+    image: freqtradeorg/freqtrade:stable
+    profiles: ["okx"]
+    restart: unless-stopped
+    container_name: freqtrade-agent-okx-dryrun
+    volumes:
+      - ./user_data:/freqtrade/user_data
+      - ./tools:/freqtrade/tools:ro
+    env_file:
+      - ./.env
+    working_dir: /freqtrade
+    ports:
+      - "127.0.0.1:8081:18080"
+    entrypoint: /bin/sh
+    command: >
+      -lc "python /freqtrade/tools/local_api_proxy.py 18080 127.0.0.1 8080 &
+      exec freqtrade trade
+      --config user_data/config_spot_dryrun_okx.json
+      --strategy HybridSafeStrategy"
+
+  live-okx:
+    image: freqtradeorg/freqtrade:stable
+    profiles: ["live-okx"]
+    restart: unless-stopped
+    container_name: freqtrade-agent-okx-live
+    volumes:
+      - ./user_data:/freqtrade/user_data
+      - ./tools:/freqtrade/tools:ro
+    env_file:
+      - ./.env.live.local
+    working_dir: /freqtrade
+    ports:
+      - "127.0.0.1:8091:18080"
+    entrypoint: /bin/sh
+    command: >
+      -lc "python /freqtrade/tools/local_api_proxy.py 18080 127.0.0.1 8080 &
+      exec freqtrade trade
+      --config user_data/config_spot_live_okx.local.json
+      --strategy HybridSafeStrategy"
+
+  live-binance:
+    image: freqtradeorg/freqtrade:stable
+    profiles: ["live-binance"]
+    restart: unless-stopped
+    container_name: freqtrade-agent-binance-live
+    volumes:
+      - ./user_data:/freqtrade/user_data
+      - ./tools:/freqtrade/tools:ro
+    env_file:
+      - ./.env.live.local
+    working_dir: /freqtrade
+    ports:
+      - "127.0.0.1:8090:18080"
+    entrypoint: /bin/sh
+    command: >
+      -lc "python /freqtrade/tools/local_api_proxy.py 18080 127.0.0.1 8080 &
+      exec freqtrade trade
+      --config user_data/config_spot_live_binance.local.json
+      --strategy HybridSafeStrategy"

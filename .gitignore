@@ -1,0 +1,35 @@
+.DS_Store
+
+# Unrelated local project
+/a-stock-quant-platform/
+
+# Local-only release and tooling artifacts
+/.codex/
+/.pytest_cache/
+
+# Python
+**/.venv/
+**/__pycache__/
+**/.pytest_cache/
+**/*.pyc
+
+# Frontend
+**/node_modules/
+**/dist/
+
+# Secrets and local environment
+**/.env
+**/.env.*
+!**/.env.example
+!**/.env.*.example
+
+# Runtime state
+/crypto-bot-platform/storage/state.json
+/crypto-bot-platform/storage/*.tmp
+/freqtrade-agent/user_data/data/
+/freqtrade-agent/user_data/logs/
+/freqtrade-agent/user_data/backtest_results/
+/freqtrade-agent/user_data/*.sqlite
+/freqtrade-agent/user_data/*.sqlite-*
+/freqtrade-agent/user_data/config_spot_live_*.local.json
+
